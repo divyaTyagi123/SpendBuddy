@@ -18,36 +18,81 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>{
   String type = "expense";
 
   void saveTransaction() async{
+    final title = titleController.text.trim();
+    final amountText = amountController.text.trim();
+
+    if (title.isEmpty || amountText.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please fill all fields")),
+      );
+      return;
+    }
+    final amount = double.tryParse(amountText);
+
+    if(amount == null){
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please enter a valid amount")),
+      );
+      return;
+    }
     await repo.addTransaction({
       "title" : titleController.text,
       "amount" : double.parse(amountController.text),
       "type": type,
-      "date": DateTime.now.toString()
+      "date": DateTime.now().millisecondsSinceEpoch,
     });
-
-    Navigator.pop(context);
+    Navigator.pop(context,true);
   }
+  @override
+  void dispose(){
+    titleController.dispose();
+    amountController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context){
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: EdgeInsets.only(
+        left: 16,
+        right: 16,
+        top: 16,
+        bottom: MediaQuery.of(context).viewInsets.bottom + 16
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text("Add Transaction", style: TextStyle(fontSize:18)),
+          const Text("Add Transaction", style: TextStyle(fontSize:18, fontWeight: FontWeight.bold)),
 
-          TextField(controller: titleController,decoration: const InputDecoration(labelText:"Title")),
-          TextField(controller: amountController,decoration: const InputDecoration(labelText:"Amount")),
+          const SizedBox(height: 16),
 
-          DropdownButton<String>(
-            value: type,
+          TextField(controller: titleController,decoration: const InputDecoration(labelText:"Title",border:OutlineInputBorder())),
+
+          const SizedBox(height: 16),
+
+          TextField(controller: amountController,decoration: const InputDecoration(labelText:"Amount",border:OutlineInputBorder())),
+
+          const SizedBox(height: 12),
+
+          DropdownButtonFormField<String>(
+            initialValue: type,
+            decoration: const InputDecoration(border:OutlineInputBorder()),
             items: const[
               DropdownMenuItem(value: "income", child:Text("Income")),
               DropdownMenuItem(value: "expense", child:Text("Expense")),
             ],
             onChanged: (val) => setState(() => type = val!),
           ),
-          ElevatedButton(onPressed: saveTransaction, child: const Text("Save"))
+
+          const SizedBox(height:16),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: saveTransaction,
+              child: const Text("Save Transaction"),
+            ),
+          ),
+
         ],
       ),
     );
