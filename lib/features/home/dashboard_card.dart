@@ -17,12 +17,22 @@ class DashboardCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.primary,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
+        gradient: const LinearGradient(
+          colors: [Color(0xFF00509E), Color(0xFF007ACC)],
+        ),
+        boxShadow:[
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 10,
+            offset:const Offset(0,5)
+          )
+        ],
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
             "Total Balance",
@@ -33,15 +43,15 @@ class DashboardCard extends StatelessWidget {
 
           // 💰 TOTAL BALANCE
           Text(
-            "₹${balance.toStringAsFixed(2)}",
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 28,
+            "₹${balance.toStringAsFixed(0)}",
+            style: TextStyle(
+              color: balance < 0 ? Colors.red : Colors.white,
+              fontSize: 30,
               fontWeight: FontWeight.bold,
             ),
           ),
 
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
 
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

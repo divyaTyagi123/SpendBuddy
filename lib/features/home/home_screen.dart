@@ -32,7 +32,9 @@ class _HomeScreenState extends State<HomeScreen> {
     double income = 0;
     double expense = 0;
 
-    for (var item in data) {
+    for (final item in data) {
+      final amount = (item['amount'] as num).toDouble();
+
       if (item['type'] == 'income') {
         income += item['amount'];
       } else {
@@ -46,6 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
       totalExpense = expense;
       totalBalance = income - expense;
     });
+
   }
 
   Future<void> _openAddSheet() async {
@@ -56,8 +59,9 @@ class _HomeScreenState extends State<HomeScreen> {
     );
 
     if (result == true) {
-      await loadData(); // ✅ refresh EVERYTHING
+      await loadData(); // refresh EVERYTHING
     }
+
   }
 
   @override
@@ -73,10 +77,9 @@ class _HomeScreenState extends State<HomeScreen> {
             income: totalIncome,
             expense: totalExpense,
           ),
-
           Expanded(
             child: TransactionList(
-              transactions: transactions, // ✅ pass data
+              transactions: transactions, // pass data
             ),
           ),
         ],

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:spendbuddy/data/repositories/transaction_repository.dart';
+import '../../core/constants/app_categories.dart';
 
 class AddTransactionSheet extends StatefulWidget{
   const AddTransactionSheet({super.key});
@@ -16,15 +17,13 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>{
   final TransactionRepository repo = TransactionRepository();
 
   String type = "expense";
+  String category = "Food";
 
   void saveTransaction() async{
     final title = titleController.text.trim();
     final amountText = amountController.text.trim();
 
     if (title.isEmpty || amountText.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please fill all fields")),
-      );
       return;
     }
     final amount = double.tryParse(amountText);
@@ -39,6 +38,7 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>{
       "title" : titleController.text,
       "amount" : double.parse(amountController.text),
       "type": type,
+      "category": category,
       "date": DateTime.now().millisecondsSinceEpoch,
     });
     Navigator.pop(context,true);
@@ -76,7 +76,9 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>{
 
           DropdownButtonFormField<String>(
             initialValue: type,
-            decoration: const InputDecoration(border:OutlineInputBorder()),
+            decoration: const InputDecoration(
+                border:OutlineInputBorder(),
+            ),
             items: const[
               DropdownMenuItem(value: "income", child:Text("Income")),
               DropdownMenuItem(value: "expense", child:Text("Expense")),
@@ -85,6 +87,24 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>{
           ),
 
           const SizedBox(height:16),
+
+          DropdownButtonFormField<String>(
+            value: category,
+            decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: "Category",
+            ),
+            items: AppCategories.categories.map((cat) {
+              return DropdownMenuItem(
+                value: cat,
+                child: Text(cat),
+              );
+            }).toList(),
+            onChanged: (val) => setState(() => category = val!),
+          ),
+
+          const SizedBox(height:16),
+
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
