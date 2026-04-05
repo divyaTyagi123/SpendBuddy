@@ -41,7 +41,7 @@ class DashboardCard extends StatelessWidget {
 
           const SizedBox(height: 8),
 
-          // 💰 TOTAL BALANCE
+          //  TOTAL BALANCE
           Text(
             "₹${balance.toStringAsFixed(0)}",
             style: TextStyle(

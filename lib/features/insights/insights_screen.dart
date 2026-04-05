@@ -58,7 +58,7 @@ class _InsightsScreenState extends State<InsightsScreen> {
         children: [
           const SizedBox(height: 20),
 
-          // 🔥 PREMIUM CARD
+          //  PREMIUM CARD
           Container(
             margin: const EdgeInsets.all(16),
             padding: const EdgeInsets.all(16),
@@ -84,7 +84,7 @@ class _InsightsScreenState extends State<InsightsScreen> {
 
                 const SizedBox(height: 16),
 
-                // 📊 DONUT CHART
+                // DONUT CHART
                 SizedBox(
                   height: 250,
                   child: Stack(
@@ -113,7 +113,7 @@ class _InsightsScreenState extends State<InsightsScreen> {
                         ),
                       ),
 
-                      // 💰 CENTER TOTAL
+                      //  CENTER TOTAL
                       Text(
                         "₹${total.toStringAsFixed(0)}",
                         style: const TextStyle(
@@ -128,7 +128,7 @@ class _InsightsScreenState extends State<InsightsScreen> {
             ),
           ),
 
-          // 📋 LEGEND
+          // LEGEND
           Expanded(
             child: ListView(
               children: categoryData.entries.map((entry) {
@@ -165,7 +165,7 @@ class _InsightsScreenState extends State<InsightsScreen> {
     );
   }
 
-  // 🎨 CATEGORY COLORS
+  // CATEGORY COLORS
   Color _getColor(String category) {
     switch (category) {
       case "Food":
