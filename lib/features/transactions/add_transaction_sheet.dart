@@ -2,15 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:spendbuddy/data/repositories/transaction_repository.dart';
 import '../../core/constants/app_categories.dart';
 
-class AddTransactionSheet extends StatefulWidget{
-  const AddTransactionSheet({super.key});
+class AddTransactionSheet extends StatefulWidget {
+  final Map<String, dynamic>? existingData;
+  final int? index;
+
+  const AddTransactionSheet({
+    super.key,
+    this.existingData,
+    this.index,
+  });
 
   @override
   State<AddTransactionSheet> createState() => _AddTransactionSheetState();
-
 }
 
-class _AddTransactionSheetState extends State<AddTransactionSheet>{
+class _AddTransactionSheetState extends State<AddTransactionSheet> {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController amountController = TextEditingController();
 
@@ -19,74 +25,113 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>{
   String type = "expense";
   String category = "Food";
 
-  void saveTransaction() async{
+  @override
+  void initState() {
+    super.initState();
+
+    // PREFILL FOR EDIT
+    if (widget.existingData != null) {
+      titleController.text = widget.existingData!['title'];
+      amountController.text =
+          widget.existingData!['amount'].toString();
+      type = widget.existingData!['type'];
+      category = widget.existingData!['category'] ?? "Food";
+    }
+  }
+
+  void saveTransaction() async {
     final title = titleController.text.trim();
     final amountText = amountController.text.trim();
 
-    if (title.isEmpty || amountText.isEmpty) {
-      return;
-    }
+    if (title.isEmpty || amountText.isEmpty) return;
+
     final amount = double.tryParse(amountText);
 
-    if(amount == null){
+    if (amount == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Please enter a valid amount")),
       );
       return;
     }
-    await repo.addTransaction({
-      "title" : titleController.text,
-      "amount" : double.parse(amountController.text),
+
+    final data = {
+      "title": title,
+      "amount": amount,
       "type": type,
       "category": category,
       "date": DateTime.now().millisecondsSinceEpoch,
-    });
-    Navigator.pop(context,true);
+    };
+
+    if (widget.index != null) {
+      //  EDIT
+      await repo.updateTransaction(widget.index!, data);
+    } else {
+      // ADD
+      await repo.addTransaction(data);
+    }
+
+    Navigator.pop(context, true);
   }
+
   @override
-  void dispose(){
+  void dispose() {
     titleController.dispose();
     amountController.dispose();
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(
         left: 16,
         right: 16,
         top: 16,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 16
+        bottom: MediaQuery.of(context).viewInsets.bottom + 16,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text("Add Transaction", style: TextStyle(fontSize:18, fontWeight: FontWeight.bold)),
+          Text(
+            widget.index != null
+                ? "Edit Transaction"
+                : "Add Transaction",
+            style: const TextStyle(
+                fontSize: 18, fontWeight: FontWeight.bold),
+          ),
 
           const SizedBox(height: 16),
 
-          TextField(controller: titleController,decoration: const InputDecoration(labelText:"Title",border:OutlineInputBorder())),
+          TextField(
+            controller: titleController,
+            decoration: const InputDecoration(
+                labelText: "Title", border: OutlineInputBorder()),
+          ),
 
           const SizedBox(height: 16),
 
-          TextField(controller: amountController,decoration: const InputDecoration(labelText:"Amount",border:OutlineInputBorder())),
+          TextField(
+            controller: amountController,
+            keyboardType: TextInputType.number,
+            decoration: const InputDecoration(
+                labelText: "Amount", border: OutlineInputBorder()),
+          ),
 
           const SizedBox(height: 12),
 
           DropdownButtonFormField<String>(
-            initialValue: type,
+            value: type,
             decoration: const InputDecoration(
-                border:OutlineInputBorder(),
+              border: OutlineInputBorder(),
             ),
-            items: const[
-              DropdownMenuItem(value: "income", child:Text("Income")),
-              DropdownMenuItem(value: "expense", child:Text("Expense")),
+            items: const [
+              DropdownMenuItem(value: "income", child: Text("Income")),
+              DropdownMenuItem(value: "expense", child: Text("Expense")),
             ],
             onChanged: (val) => setState(() => type = val!),
           ),
 
-          const SizedBox(height:16),
+          const SizedBox(height: 16),
 
           DropdownButtonFormField<String>(
             value: category,
@@ -103,16 +148,17 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>{
             onChanged: (val) => setState(() => category = val!),
           ),
 
-          const SizedBox(height:16),
+          const SizedBox(height: 16),
 
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
               onPressed: saveTransaction,
-              child: const Text("Save Transaction"),
+              child: Text(widget.index != null
+                  ? "Update Transaction"
+                  : "Save Transaction"),
             ),
           ),
-
         ],
       ),
     );

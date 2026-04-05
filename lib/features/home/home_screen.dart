@@ -79,7 +79,8 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           Expanded(
             child: TransactionList(
-              transactions: transactions, // pass data
+              transactions: transactions,
+              onDelete: loadData,// pass data
             ),
           ),
         ],

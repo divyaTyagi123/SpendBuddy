@@ -10,4 +10,13 @@ Future<List> getTransactions() async {
   final box = await _hiveService.openBox();
   return _hiveService.getTransactions(box);
 }
+  Future<void> deleteTransaction(int index) async {
+    final box = await _hiveService.openBox();
+    await box.deleteAt(index);
+  }
+
+  Future<void> updateTransaction(int index, Map<String, dynamic> data) async {
+    final box = await _hiveService.openBox();
+    await box.putAt(index, data);
+  }
 }
