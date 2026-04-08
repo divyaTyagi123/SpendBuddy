@@ -1,13 +1,25 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:spendbuddy/features/insights/insights_screen.dart';
 import 'core/theme/app_theme.dart';
+import 'data/services/notification_service.dart';
 import 'features/home/home_screen.dart';
+import 'firebase_options.dart';
+
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
+
+
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  await NotificationService.init();
 
   runApp(const SpendBuddyApp());
 }
@@ -23,6 +35,10 @@ class SpendBuddyApp extends StatelessWidget{
       theme: AppTheme.lightTheme,
       darkTheme:AppTheme.darkTheme,
       themeMode: ThemeMode.system,
+      navigatorKey: navigatorKey,
+      routes: {
+        'insights' : (_) => InsightsScreen(),
+      },
       home: const MainScreen(),
     );
   }
