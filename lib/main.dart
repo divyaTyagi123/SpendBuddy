@@ -1,84 +1,22 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:spendbuddy/features/insights/insights_screen.dart';
-import 'core/theme/app_theme.dart';
-import 'data/services/notification_service.dart';
-import 'features/home/home_screen.dart';
-import 'firebase_options.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+import 'router/app_router.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Hive.initFlutter();
-
-
-
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
+void main(){
+  runApp(
+    const ProviderScope(child: MyApp()),
   );
-  await NotificationService.init();
-
-  runApp(const SpendBuddyApp());
 }
 
-class SpendBuddyApp extends StatelessWidget{
-  const SpendBuddyApp ({super.key});
+class MyApp extends StatelessWidget{
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context){
-    return MaterialApp(
-      title: 'Spend Buddy',
+    return MaterialApp.router(
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      darkTheme:AppTheme.darkTheme,
-      themeMode: ThemeMode.system,
-      navigatorKey: navigatorKey,
-      routes: {
-        'insights' : (_) => InsightsScreen(),
-      },
-      home: const MainScreen(),
-    );
-  }
-}
-class MainScreen extends StatefulWidget{
-  const MainScreen({super.key});
-
-  @override
-  State<MainScreen> createState() => _MainScreenState();
-}
-
-class _MainScreenState extends State<MainScreen>{
-  int index = 0;
-  final screens=[
-    const HomeScreen(),
-    const InsightsScreen(),
-  ];
-
-  @override
-  Widget build(BuildContext context){
-    return Scaffold(
-      body: screens[index],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: index,
-        onTap: (value){
-          setState((){
-            index = value;
-          });
-        },
-        items: const[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label:"Home",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.bar_chart),
-            label:"Insights"
-          )
-        ]
-      ),
+        routerConfig: appRouter,
     );
   }
 }
