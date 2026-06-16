@@ -4,6 +4,8 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:spendbuddy/providers/qr_scanner_provider.dart';
 import 'package:flutter/services.dart';
 
+import '../providers/history_provider.dart';
+
 class ScannerScreen extends ConsumerStatefulWidget{
   const ScannerScreen({super.key});
 
@@ -56,6 +58,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen>{
                     isScanned = true;
                   });
 
+                  ref.read(scanHistoryProvider.notifier).addScan(code,code);
                   ref.read(scannedResultProvider.notifier).state = code;
                 }
               ),
